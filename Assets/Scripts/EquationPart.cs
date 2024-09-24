@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
-public abstract class EquationPart
+using UnityEngine;
+public abstract class EquationPart : MonoBehaviour
 {
     public virtual AdditionSequence Add(EquationPart other)
     {

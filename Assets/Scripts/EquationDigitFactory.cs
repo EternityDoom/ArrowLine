@@ -6,12 +6,12 @@ using UnityEngine;
 public class EquationDigitFactory : MonoBehaviour
 {
     private static GameObject digitsource;
-    [SerializeField] GameObject Digit { get { return digitsource; } set { digitsource = value; } }
+    [SerializeField] GameObject digit;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (digit != null) digitsource = digit;
     }
 
     // Update is called once per frame
