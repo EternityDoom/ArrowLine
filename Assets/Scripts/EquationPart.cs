@@ -75,4 +75,5 @@ public abstract class EquationPart : MonoBehaviour
     public abstract bool ContainsVariable(char v);
     public abstract bool ContainsVariables(params char[] v);
     public abstract char[] GetVariables();
+    public abstract float[] GetDimensions();
 }

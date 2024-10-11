@@ -112,4 +112,46 @@ public class MultiplicationSequence : EquationPart
             else return 0;
         }
     }
+
+    public override float[] GetDimensions()
+    {
+        float[] vars = new float[2];
+        if (sequence.Count == 0) return vars;
+        if (IsSimple())
+        {
+            sequence[0].GetDimensions().CopyTo(vars, 0);
+            vars[0] += 2;
+        }
+        else
+        {
+            vars[0] = -1;
+            vars[1] = 1;
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                float[] subDs = sequence[i].GetDimensions();
+                vars[0] += subDs[0] + 1;
+                vars[1] = vars[1] < subDs[1] ? subDs[1] : vars[1];
+            }
+        }
+        return vars;
+    }
+
+    public bool IsSimple()
+    {
+        if (sequence[0].GetVariables().Length == 0)
+        {
+            for (int i = 1; i < sequence.Count; i++)
+            {
+                if (!(sequence[i] is EquationVariable)) return false;
+            }
+        }
+        else
+        {
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                if (!(sequence[i] is EquationVariable)) return false;
+            }
+        }
+        return true;
+    }
 }

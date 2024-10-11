@@ -80,4 +80,21 @@ public class Fraction : EquationPart
         v.Sort();
         return v.ToArray();
     }
+
+    public override float[] GetDimensions()
+    {
+        float[] vars = new float[2];
+        float[] numerDs = Numerator.GetDimensions();
+        float[] denomDs = Denominator.GetDimensions();
+        vars[0] = numerDs[0] > denomDs[0] ? numerDs[0] : denomDs[0];
+        vars[1] = numerDs[1] + denomDs[1];
+        // If the Numerator or Denominator has a Fraction in it, shrink them both and add a little padding to each side.
+        if (vars[1] > 2.0f)
+        {
+            vars[0] *= 0.66f;
+            vars[1] *= 0.66f;
+            vars[0]++;
+        }
+        return vars;
+    }
 }

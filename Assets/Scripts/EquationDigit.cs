@@ -6,7 +6,6 @@ namespace Assets.Scripts
 {
     public class EquationDigit : MonoBehaviour
     {
-        private Transform t;
         public char Digit { 
             get
             {
@@ -18,10 +17,6 @@ namespace Assets.Scripts
             } 
         }
         [SerializeField] TMP_Text digittext;
-        public Vector3 Position { get { return t.position; } }
-        void Start()
-        {
-            t = GetComponent<Transform>();
-        }
+        public Vector3 Position { get { return transform.localPosition; } }
     }
 }

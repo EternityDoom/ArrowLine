@@ -111,4 +111,19 @@ public class AdditionSequence : EquationPart
             return 0;
         }
     }
+
+    public override float[] GetDimensions()
+    {
+        float[] vars = new float[2];
+        if (sequence.Count == 0) return vars;
+        vars[0] = -1;
+        vars[1] = 1;
+        for (int i = 0; i < sequence.Count; i++)
+        {
+            float[] subDs = sequence[i].GetDimensions();
+            vars[0] += subDs[0] + 1;
+            vars[1] = vars[1] < subDs[1] ? subDs[1] : vars[1];
+        }
+        return vars;
+    }
 }

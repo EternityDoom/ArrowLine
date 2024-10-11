@@ -34,4 +34,12 @@ public class EquationVariable : EquationPart
         vars[0] = vchar;
         return vars;
     }
+
+    public override float[] GetDimensions()
+    {
+        float[] vars = new float[2];
+        vars[0] = 1.0f;
+        vars[1] = 1.0f;
+        return vars;
+    }
 }

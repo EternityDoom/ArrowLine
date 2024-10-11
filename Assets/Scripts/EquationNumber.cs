@@ -25,4 +25,19 @@ public class EquationNumber : EquationPart
         if (i == Number) return i;
         else throw new ArgumentException("Can't get integer value of a decimal.");
     }
+
+    public override float[] GetDimensions()
+    {
+        float[] vars = new float[2];
+        string textform = "" + Number;
+        if (textform.Contains('.'))
+        {
+            vars[0] = textform.Length - 1;
+        }
+        else {
+            vars[0] = textform.Length;
+        }
+        vars[1] = 1.0f;
+        return vars;
+    }
 }
