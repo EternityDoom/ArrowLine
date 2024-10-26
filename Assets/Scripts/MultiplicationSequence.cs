@@ -1,9 +1,12 @@
-﻿using System;
+﻿using Assets.Scripts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 public class MultiplicationSequence : EquationPart
 {
+    private List<EquationDigit> operators = new List<EquationDigit>();
+
     private List<EquationPart> sequence = new List<EquationPart>();
     public List<EquationPart> Sequence { get { return sequence; } }
 
@@ -74,12 +77,16 @@ public class MultiplicationSequence : EquationPart
         }
         else if (other is MultiplicationSequence otherseq)
         {
-            Sequence.AddRange(otherseq.Sequence);
+            foreach(EquationPart part in otherseq.Sequence)
+            {
+                Multiply(part);
+            }
         }
         else
         {
             Sequence.Add(other);
         }
+        UpdateDigits();
         return this;
     }
 
@@ -153,5 +160,46 @@ public class MultiplicationSequence : EquationPart
             }
         }
         return true;
+    }
+
+    private void UpdateDigits()
+    {
+        if (IsSimple()) 
+        {
+            for (int i = 0; i < operators.Count; i++)
+            {
+                Destroy(operators[i].gameObject);
+            }
+            operators.Clear();
+            float positiondex = 0.0f;
+            for (int i = 0; i < sequence.Count; i++)
+            {
+                sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+                positiondex += sequence[i].GetDimensions()[0];
+            }
+        } else {
+            for (int i = sequence.Count - 1; i < operators.Count; i++)
+            {
+                Destroy(operators[i].gameObject);
+            }
+            if (sequence.Count - 1 < operators.Count)
+            {
+                operators.RemoveRange(sequence.Count - 1, operators.Count - (sequence.Count - 1));
+            }
+            for (int i = operators.Count; i < sequence.Count - 1; i++)
+            {
+                EquationDigit plussign = EquationFactory.MakeNewEquationDigit(transform, '×');
+                operators.Add(plussign);
+            }
+            sequence[0].transform.localPosition.Set(0, 0, 0);
+            float positiondex = sequence[0].GetDimensions()[0];
+            for (int i = 1; i < sequence.Count; i++)
+            {
+                operators[i - 1].transform.localPosition.Set(positiondex, 0, 0);
+                positiondex++;
+                sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+                positiondex += sequence[i].GetDimensions()[0];
+            }
+        }
     }
 }

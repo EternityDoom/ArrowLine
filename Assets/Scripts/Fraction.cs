@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 public class Fraction : EquationPart
 {
+    [SerializeField] GameObject bar;
     private EquationPart numerator;
     private EquationPart denominator;
     public EquationPart Numerator 
@@ -9,7 +11,14 @@ public class Fraction : EquationPart
         get { return numerator; }
         set 
         {
-            if (value == null) { throw new ArgumentException("Fraction can't have a null numerator."); } else { numerator = value; } 
+            if (value == null) { 
+                throw new ArgumentException("Fraction can't have a null numerator.");
+            }
+            else
+            {
+                numerator = value;
+                UpdateDigits();
+            }
         }
     }
     public EquationPart Denominator { 
@@ -18,13 +27,17 @@ public class Fraction : EquationPart
         {
             if (value == null) { throw new ArgumentException("Fraction can't have a null denominator."); }
             else if (value is EquationNumber valnum && valnum.Number == 0) { throw new ArgumentException("Fraction denominator can't be 0."); }
-            else { denominator = value; }
+            else 
+            {
+                denominator = value;
+                UpdateDigits(); 
+            }
         }
     }
     public Fraction()
     {
-        numerator = new EquationNumber(0);
-        denominator = new EquationNumber(1);
+        numerator = EquationFactory.MakeNewEquationNumber(transform, 0);
+        denominator = EquationFactory.MakeNewEquationNumber(transform, 1);
     }
     public Fraction(double top)
     {
@@ -96,5 +109,27 @@ public class Fraction : EquationPart
             vars[0]++;
         }
         return vars;
+    }
+    private void UpdateDigits()
+    {
+        float[] numerDs = Numerator.GetDimensions();
+        float[] denomDs = Denominator.GetDimensions();
+        float width = numerDs[0] > denomDs[0] ? numerDs[0] : denomDs[0];
+        if (numerDs[1] > 1.0f || denomDs[1] > 1.0f)
+        {
+            width++;
+            Numerator.gameObject.transform.localScale = new Vector3(0.66f, 0.66f, 1);
+            Numerator.transform.localPosition = new Vector3((width - numerDs[0]) / 2.0f, numerDs[1] * 0.33f, 0);
+            Denominator.gameObject.transform.localScale = new Vector3(0.66f, 0.66f, 1);
+            Denominator.transform.localPosition = new Vector3((width - denomDs[0]) / 2.0f, denomDs[1] * -0.33f, 0);
+        } else
+        {
+            Numerator.gameObject.transform.localScale = new Vector3(1, 1, 1);
+            Numerator.transform.localPosition = new Vector3((width - numerDs[0]) / 2.0f, 0.5f, 0);
+            Denominator.gameObject.transform.localScale = new Vector3(1, 1, 1);
+            Denominator.transform.localPosition = new Vector3((width - denomDs[0]) / 2.0f, -0.5f, 0);
+        }
+        bar.transform.localScale = new Vector3(width, 0.075f, 1);
+        bar.transform.localPosition = new Vector3((width - 1.0f) / 2.0f, 0, 0);
     }
 }

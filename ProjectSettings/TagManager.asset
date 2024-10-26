@@ -38,6 +38,33 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Sky
+    uniqueID: 206996457
+    locked: 0
+  - name: Underground
+    uniqueID: 1573734583
+    locked: 0
+  - name: Tunnels
+    uniqueID: 570860365
+    locked: 0
+  - name: Grass
+    uniqueID: 3107290303
+    locked: 0
+  - name: Archer
+    uniqueID: 1347960215
+    locked: 0
+  - name: Tower Background
+    uniqueID: 461202369
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Enemy
+    uniqueID: 2738882387
+    locked: 0
+  - name: Tower Foreground
+    uniqueID: 373437733
+    locked: 0
+  - name: Equation Background
+    uniqueID: 1566039797
     locked: 0

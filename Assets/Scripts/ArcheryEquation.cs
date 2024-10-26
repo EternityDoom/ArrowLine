@@ -42,7 +42,7 @@ public class ArcheryEquation : MonoBehaviour
         {
             intercept = new Fraction(interceptNumerator, interceptDenominator);
         }
-        equalSign = EquationDigitFactory.makeNewEquationDigit(GetComponent<Transform>());
+        equalSign = EquationFactory.MakeNewEquationDigit(GetComponent<Transform>());
         equalSign.Digit = '=';
     }
 

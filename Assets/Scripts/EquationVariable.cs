@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Assets.Scripts;
+using System;
+using UnityEngine;
 public class EquationVariable : EquationPart
 {
+    private EquationDigit digit;
     private char vchar;
     public char VariableChar { 
         get { return vchar; }
@@ -14,10 +17,16 @@ public class EquationVariable : EquationPart
                 vchar = (char)((int)value + 32);
             }
             else throw new ArgumentException("Can't set an Equation Variable to something other than x or y.");
+            if (digit != null) { digit.Digit = vchar; }
         }
     }
-    public EquationVariable() { VariableChar = 'x'; }
-    public EquationVariable(char vchar) { VariableChar = vchar; }
+    public EquationVariable() { vchar = 'x'; }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        digit = EquationFactory.MakeNewEquationDigit(transform, vchar);
+    }
     public override bool ContainsVariable(char v)
     {
         return v == vchar || v == vchar - ' ';
@@ -25,7 +34,7 @@ public class EquationVariable : EquationPart
 
     public override bool ContainsVariables(params char[] v)
     {
-        return v.Length == 1 && ContainsVariable(v[0]);
+        return (v.Length == 1 && ContainsVariable(v[0])) || v.Length == 0;
     }
 
     public override char[] GetVariables()

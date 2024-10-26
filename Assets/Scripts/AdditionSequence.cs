@@ -1,13 +1,21 @@
-﻿using System;
+﻿using Assets.Scripts;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class AdditionSequence : EquationPart
 {
+    private List<EquationDigit> operators = new List<EquationDigit>();
     private List<EquationPart> sequence = new List<EquationPart>();
     public List<EquationPart> Sequence { get { return sequence; } }
 
-    public AdditionSequence(params EquationPart[] parts) 
+    public AdditionSequence()
+    {
+
+    }
+
+    public AdditionSequence(params EquationPart[] parts)
     {
         foreach (var part in parts)
         {
@@ -16,7 +24,9 @@ public class AdditionSequence : EquationPart
                 if (part is AdditionSequence sqpart)
                 {
                     sequence.AddRange(sqpart.Sequence);
-                } else {
+                }
+                else
+                {
                     sequence.Add(part);
                 }
             }
@@ -44,7 +54,7 @@ public class AdditionSequence : EquationPart
 
             }
         }
-        for (int i = 0;i < flags.Length; i++)
+        for (int i = 0; i < flags.Length; i++)
         {
             if (!flags[i]) return false;
         }
@@ -72,12 +82,16 @@ public class AdditionSequence : EquationPart
         }
         else if (other is AdditionSequence otherseq)
         {
-            Sequence.AddRange(otherseq.Sequence);
+            foreach(EquationPart part in otherseq.Sequence)
+            {
+                Add(part);
+            }
         }
         else
         {
             Sequence.Add(other);
         }
+        UpdateDigits();
         return this;
     }
 
@@ -125,5 +139,30 @@ public class AdditionSequence : EquationPart
             vars[1] = vars[1] < subDs[1] ? subDs[1] : vars[1];
         }
         return vars;
+    }
+
+    private void UpdateDigits()
+    {
+        for (int i = sequence.Count - 1; i < operators.Count; i++)
+        {
+            Destroy(operators[i].gameObject);
+        }
+        if (sequence.Count - 1 < operators.Count) {
+            operators.RemoveRange(sequence.Count - 1, operators.Count - (sequence.Count - 1));
+        }
+        for (int i = operators.Count; i < sequence.Count - 1; i++)
+        {
+            EquationDigit plussign = EquationFactory.MakeNewEquationDigit(transform, '+');
+            operators.Add(plussign);
+        }
+        sequence[0].transform.localPosition.Set(0, 0, 0);
+        float positiondex = sequence[0].GetDimensions()[0];
+        for (int i = 1; i < sequence.Count; i++)
+        {
+            operators[i - 1].transform.localPosition.Set(positiondex, 0, 0);
+            positiondex++;
+            sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+            positiondex += sequence[i].GetDimensions()[0];
+        }
     }
 }
