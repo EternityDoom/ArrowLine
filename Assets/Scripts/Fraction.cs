@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 public class Fraction : EquationPart
 {
@@ -17,7 +18,10 @@ public class Fraction : EquationPart
             else
             {
                 numerator = value;
-                UpdateDigits();
+                if (Started)
+                {
+                    numerator.transform.parent = transform;
+                }
             }
         }
     }
@@ -30,34 +34,20 @@ public class Fraction : EquationPart
             else 
             {
                 denominator = value;
-                UpdateDigits(); 
+                if (Started)
+                {
+                    denominator.transform.parent = transform;
+                } 
             }
         }
     }
-    public Fraction()
+    public override void Start()
     {
-        numerator = EquationFactory.MakeNewEquationNumber(transform, 0);
-        denominator = EquationFactory.MakeNewEquationNumber(transform, 1);
-    }
-    public Fraction(double top)
-    {
-        numerator = new EquationNumber(top);
-        denominator = new EquationNumber(1);
-    }
-    public Fraction(double top, double bottom)
-    {
-        numerator = new EquationNumber(top);
-        denominator = new EquationNumber(bottom);
-    }
-    public Fraction(EquationPart top)
-    {
-        Numerator = top;
-        denominator = new EquationNumber(1);
-    }
-    public Fraction(EquationPart top, EquationPart bottom)
-    {
-        Numerator = top;
-        Denominator = bottom;
+        base.Start();
+        if (numerator == null) numerator = EquationFactory.MakeNewEquationNumber(transform, 0);
+        else numerator.transform.parent = transform;
+        if (denominator == null) denominator = EquationFactory.MakeNewEquationNumber(transform, 1);
+        else denominator.transform.parent = transform;
     }
     public override bool ContainsVariable(char v)
     {
@@ -110,11 +100,14 @@ public class Fraction : EquationPart
         }
         return vars;
     }
-    private void UpdateDigits()
+    public override void UpdateDigits()
     {
+        numerator.UpdateDigits();
+        denominator.UpdateDigits();
         float[] numerDs = Numerator.GetDimensions();
         float[] denomDs = Denominator.GetDimensions();
         float width = numerDs[0] > denomDs[0] ? numerDs[0] : denomDs[0];
+        // If the Numerator or Denominator has a Fraction in it, shrink them both and add a little padding to each side.
         if (numerDs[1] > 1.0f || denomDs[1] > 1.0f)
         {
             width++;

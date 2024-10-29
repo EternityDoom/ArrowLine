@@ -206,8 +206,12 @@ public class EquationFactory : MonoBehaviour
         else
         {
             Fraction fraction = Instantiate(fractionsource, parent).GetComponent<Fraction>();
+            EquationPart oldie = fraction.Numerator;
             fraction.Numerator = numerator;
+            Destroy(oldie);
+            oldie = fraction.Denominator;
             fraction.Denominator = denominator;
+            Destroy(oldie);
             return fraction;
         }
     }

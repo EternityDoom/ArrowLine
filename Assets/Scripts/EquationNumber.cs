@@ -7,14 +7,16 @@ public class EquationNumber : EquationPart
     [SerializeField] GameObject decimalPoint;
     private List<EquationDigit> digits = new List<EquationDigit>();
     private double number = 0;
-    public double Number { get => number; set { number = value; UpdateDigits(); } }
-    public EquationNumber() { }
-    public EquationNumber(double number) {  Number = number; }
+    public double Number { get => number; 
+        set { 
+            number = value;
+        }
+    }
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
-        UpdateDigits();
+        base.Start();
     }
     public override bool ContainsVariable(char v)
     {
@@ -53,7 +55,7 @@ public class EquationNumber : EquationPart
         return vars;
     }
 
-    private void UpdateDigits()
+    public override void UpdateDigits()
     {
         foreach (EquationDigit digit in digits)
         {

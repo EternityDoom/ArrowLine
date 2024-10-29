@@ -17,14 +17,14 @@ public class EquationVariable : EquationPart
                 vchar = (char)((int)value + 32);
             }
             else throw new ArgumentException("Can't set an Equation Variable to something other than x or y.");
-            if (digit != null) { digit.Digit = vchar; }
         }
     }
     public EquationVariable() { vchar = 'x'; }
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
+        base.Start();
         digit = EquationFactory.MakeNewEquationDigit(transform, vchar);
     }
     public override bool ContainsVariable(char v)
@@ -50,5 +50,10 @@ public class EquationVariable : EquationPart
         vars[0] = 1.0f;
         vars[1] = 1.0f;
         return vars;
+    }
+
+    public override void UpdateDigits()
+    {
+        digit.Digit = vchar;
     }
 }

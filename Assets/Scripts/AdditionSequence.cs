@@ -8,32 +8,16 @@ public class AdditionSequence : EquationPart
 {
     private List<EquationDigit> operators = new List<EquationDigit>();
     private List<EquationPart> sequence = new List<EquationPart>();
-    public List<EquationPart> Sequence { get { return sequence; } }
 
-    public AdditionSequence()
+    // Start is called before the first frame update
+    public override void Start()
     {
-
-    }
-
-    public AdditionSequence(params EquationPart[] parts)
-    {
-        foreach (var part in parts)
+        base.Start();
+        foreach (EquationPart part in sequence) 
         {
-            if (part != null)
-            {
-                if (part is AdditionSequence sqpart)
-                {
-                    sequence.AddRange(sqpart.Sequence);
-                }
-                else
-                {
-                    sequence.Add(part);
-                }
-            }
-            else throw new ArgumentException("Addition Sequence can't have a null element.");
+            part.transform.parent = transform;
         }
     }
-
     public override bool ContainsVariable(char v)
     {
         foreach (var item in sequence)
@@ -82,22 +66,22 @@ public class AdditionSequence : EquationPart
         }
         else if (other is AdditionSequence otherseq)
         {
-            foreach(EquationPart part in otherseq.Sequence)
+            foreach(EquationPart part in otherseq.sequence)
             {
                 Add(part);
             }
         }
         else
         {
-            Sequence.Add(other);
+            if (Started) other.transform.parent = transform;
+            sequence.Add(other);
         }
-        UpdateDigits();
         return this;
     }
 
     public void Sort()
     {
-        Sequence.Sort(CompareEquationParts);
+        sequence.Sort(CompareEquationParts);
     }
 
     private static int CompareEquationParts(EquationPart a, EquationPart b)
@@ -141,8 +125,12 @@ public class AdditionSequence : EquationPart
         return vars;
     }
 
-    private void UpdateDigits()
+    public override void UpdateDigits()
     {
+        foreach (var item in sequence)
+        {
+            item.UpdateDigits();
+        }
         for (int i = sequence.Count - 1; i < operators.Count; i++)
         {
             Destroy(operators[i].gameObject);

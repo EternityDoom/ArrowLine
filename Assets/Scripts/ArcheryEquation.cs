@@ -28,27 +28,40 @@ public class ArcheryEquation : MonoBehaviour
         }
         if (slopeDenominator == 1)
         {
-            slope = new EquationNumber(slopeNumerator);
+            slope = EquationFactory.MakeNewEquationNumber(transform, slopeNumerator);
         }
         else
         {
-            slope = new Fraction(slopeNumerator, slopeDenominator);
+            slope = EquationFactory.MakeNewFraction(
+                transform, 
+                EquationFactory.MakeNewEquationNumber(transform, slopeNumerator), 
+                EquationFactory.MakeNewEquationNumber(transform, slopeDenominator)
+                );
         }
         if (interceptDenominator == 1)
         {
-            intercept = new EquationNumber(interceptNumerator);
+            intercept = EquationFactory.MakeNewEquationNumber(transform, interceptNumerator);
         }
         else
         {
-            intercept = new Fraction(interceptNumerator, interceptDenominator);
+            intercept = EquationFactory.MakeNewFraction(
+                transform,
+                EquationFactory.MakeNewEquationNumber(transform, interceptNumerator),
+                EquationFactory.MakeNewEquationNumber(transform, interceptDenominator)
+                );
         }
-        equalSign = EquationFactory.MakeNewEquationDigit(GetComponent<Transform>());
-        equalSign.Digit = '=';
+        equalSign = EquationFactory.MakeNewEquationDigit(GetComponent<Transform>(), '=');
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    public void UpdateDigits()
+    {
+        left.UpdateDigits();
+        right.UpdateDigits();
     }
 }
