@@ -8,6 +8,7 @@ public class MultiplicationSequence : EquationPart
     private List<EquationDigit> operators = new List<EquationDigit>();
 
     private List<EquationPart> sequence = new List<EquationPart>();
+    public List<EquationPart> Sequence { get { return sequence; } }
 
     // Start is called before the first frame update
     public override void Start()
