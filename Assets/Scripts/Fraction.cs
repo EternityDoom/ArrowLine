@@ -20,7 +20,7 @@ public class Fraction : EquationPart
                 numerator = value;
                 if (Started)
                 {
-                    numerator.transform.parent = transform;
+                    numerator.transform.SetParent(transform, false);
                 }
             }
         }
@@ -36,7 +36,7 @@ public class Fraction : EquationPart
                 denominator = value;
                 if (Started)
                 {
-                    denominator.transform.parent = transform;
+                    denominator.transform.SetParent(transform, false);
                 } 
             }
         }
@@ -44,10 +44,7 @@ public class Fraction : EquationPart
     public override void Start()
     {
         base.Start();
-        if (numerator == null) numerator = EquationFactory.MakeNewEquationNumber(transform, 0);
-        else numerator.transform.parent = transform;
-        if (denominator == null) denominator = EquationFactory.MakeNewEquationNumber(transform, 1);
-        else denominator.transform.parent = transform;
+        UpdateDigits();
     }
     public override bool ContainsVariable(char v)
     {
@@ -102,6 +99,7 @@ public class Fraction : EquationPart
     }
     public override void UpdateDigits()
     {
+        if (!Started) return;
         numerator.UpdateDigits();
         denominator.UpdateDigits();
         float[] numerDs = Numerator.GetDimensions();

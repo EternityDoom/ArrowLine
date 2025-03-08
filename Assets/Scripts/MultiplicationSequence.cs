@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 public class MultiplicationSequence : EquationPart
 {
@@ -14,10 +15,7 @@ public class MultiplicationSequence : EquationPart
     public override void Start()
     {
         base.Start();
-        foreach (EquationPart part in sequence)
-        {
-            part.transform.parent = transform;
-        }
+        UpdateDigits();
     }
 
     public override bool ContainsVariable(char v)
@@ -60,26 +58,50 @@ public class MultiplicationSequence : EquationPart
         v.Sort();
         return v.ToArray();
     }
+
     public override MultiplicationSequence Multiply(EquationPart other)
     {
         if (other == null)
         {
             throw new ArgumentException("Can't multiply a null EquationPart.");
         }
-        else if (other is MultiplicationSequence otherseq)
+        else if (other is AdditionSequence otherseq)
         {
-            foreach(EquationPart part in otherseq.sequence)
+            EquationPart[] vals = new EquationPart[Sequence.Count + otherseq.Sequence.Count];
+            for (int i = 0; i < Sequence.Count; i++)
             {
-                Multiply(part);
+                vals[i] = Sequence[i];
             }
+            for (int i = Sequence.Count; i < Sequence.Count + otherseq.Sequence.Count; i++)
+            {
+                vals[i] = otherseq.Sequence[i];
+            }
+            MultiplicationSequence result = EquationFactory.MakeNewMultiplicationSequence(vals);
+            if (Started) other.transform.SetParent(transform, false);
+            return result;
         }
         else
         {
-            sequence.Add(other);
+            EquationPart[] vals = new EquationPart[Sequence.Count + 1];
+            for (int i = 0; i < Sequence.Count; i++)
+            {
+                vals[i] = Sequence[i];
+            }
+            vals[Sequence.Count] = other;
+            MultiplicationSequence result = EquationFactory.MakeNewMultiplicationSequence(vals);
+            if (Started) other.transform.SetParent(transform, false);
+            return result;
         }
-        return this;
     }
 
+    /// <summary>
+    /// Sorts the MultiplicationSequence's children by type. It puts
+    /// EquationNumbers first, then Fractions that have no variables,
+    /// then EquationVariables, and then everything more complicated
+    /// goes last.
+    /// Why that pattern? Well, it makes it easy to see if the sequence
+    /// is simple!
+    /// </summary>
     public void Sort()
     {
         sequence.Sort(CompareEquationParts);
@@ -95,7 +117,7 @@ public class MultiplicationSequence : EquationPart
         else if (b == null) { return 1; }
         else
         {
-            if (a is EquationNumber && b is EquationNumber) { return 0; }
+            if (a is EquationNumber anum && b is EquationNumber bnum) { return anum.Number >= bnum.Number ? 1 : -1; }
             else if (a is EquationNumber) { return 1; }
             else if (b is EquationNumber) { return -1; }
             char[] avars = a.GetVariables();
@@ -117,7 +139,7 @@ public class MultiplicationSequence : EquationPart
         if (IsSimple())
         {
             sequence[0].GetDimensions().CopyTo(vars, 0);
-            vars[0] += 2;
+            vars[0] += sequence.Count - 1;
         }
         else
         {
@@ -133,8 +155,17 @@ public class MultiplicationSequence : EquationPart
         return vars;
     }
 
+    /// <summary>
+    /// Checks to see if this MultiplicationSequence is simple, in which
+    /// case it doesn't need multiplication signs. A simple MultiplicationSequence
+    /// may or may not have an EquationNumber or a simple Fraction as its 
+    /// first part, but any other parts must be EquationVariables.
+    /// </summary>
+    /// <returns>True if it's simple, false otherwise.</returns>
     public bool IsSimple()
     {
+        // This isn't the best way to check if the first element is a
+        // number or a simple fraction. I should fix it later.
         if (sequence[0].GetVariables().Length == 0)
         {
             for (int i = 1; i < sequence.Count; i++)
@@ -154,6 +185,7 @@ public class MultiplicationSequence : EquationPart
 
     public override void UpdateDigits()
     {
+        if (!Started) return;
         foreach (var item in sequence)
         {
             item.UpdateDigits();
@@ -168,7 +200,8 @@ public class MultiplicationSequence : EquationPart
             float positiondex = 0.0f;
             for (int i = 0; i < sequence.Count; i++)
             {
-                sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+                sequence[i].transform.SetParent(transform, false);
+                sequence[i].transform.SetLocalPositionAndRotation(new Vector3(positiondex, 0, 0), new Quaternion());
                 positiondex += sequence[i].GetDimensions()[0];
             }
         } else {
@@ -182,16 +215,18 @@ public class MultiplicationSequence : EquationPart
             }
             for (int i = operators.Count; i < sequence.Count - 1; i++)
             {
-                EquationDigit plussign = EquationFactory.MakeNewEquationDigit(transform, '×');
+                EquationDigit plussign = EquationFactory.MakeNewEquationDigit('×');
+                plussign.transform.SetParent(transform, false);
                 operators.Add(plussign);
             }
-            sequence[0].transform.localPosition.Set(0, 0, 0);
+            sequence[0].transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), new Quaternion());
             float positiondex = sequence[0].GetDimensions()[0];
             for (int i = 1; i < sequence.Count; i++)
             {
-                operators[i - 1].transform.localPosition.Set(positiondex, 0, 0);
+                operators[i - 1].transform.SetLocalPositionAndRotation(new Vector3(positiondex, 0, 0), new Quaternion());
                 positiondex++;
-                sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+                sequence[i].transform.SetParent(transform, false);
+                sequence[i].transform.SetLocalPositionAndRotation(new Vector3(positiondex, 0, 0), new Quaternion());
                 positiondex += sequence[i].GetDimensions()[0];
             }
         }

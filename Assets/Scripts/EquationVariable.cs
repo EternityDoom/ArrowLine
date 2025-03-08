@@ -25,7 +25,8 @@ public class EquationVariable : EquationPart
     public override void Start()
     {
         base.Start();
-        digit = EquationFactory.MakeNewEquationDigit(transform, vchar);
+        digit = EquationFactory.MakeNewEquationDigit(vchar);
+        digit.transform.SetParent(transform, false);
     }
     public override bool ContainsVariable(char v)
     {
@@ -54,6 +55,6 @@ public class EquationVariable : EquationPart
 
     public override void UpdateDigits()
     {
-        digit.Digit = vchar;
+        if (Started) digit.Digit = vchar;
     }
 }

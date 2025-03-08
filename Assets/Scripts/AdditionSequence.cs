@@ -14,10 +14,7 @@ public class AdditionSequence : EquationPart
     public override void Start()
     {
         base.Start();
-        foreach (EquationPart part in sequence) 
-        {
-            part.transform.parent = transform;
-        }
+        UpdateDigits();
     }
     public override bool ContainsVariable(char v)
     {
@@ -67,19 +64,37 @@ public class AdditionSequence : EquationPart
         }
         else if (other is AdditionSequence otherseq)
         {
-            foreach(EquationPart part in otherseq.sequence)
+            EquationPart[] vals = new EquationPart[Sequence.Count + otherseq.Sequence.Count];
+            for (int i = 0; i < Sequence.Count; i++)
             {
-                Add(part);
+                vals[i] = Sequence[i];
             }
+            for (int i = Sequence.Count; i < Sequence.Count + otherseq.Sequence.Count; i++)
+            {
+                vals[i] = otherseq.Sequence[i];
+            }
+            AdditionSequence result = EquationFactory.MakeNewAdditionSequence(vals);
+            if (Started) other.transform.SetParent(transform, false);
+            return result;
         }
         else
         {
-            if (Started) other.transform.parent = transform;
-            sequence.Add(other);
+            EquationPart[] vals = new EquationPart[Sequence.Count + 1];
+            for (int i = 0; i < Sequence.Count; i++)
+            {
+                vals[i] = Sequence[i];
+            }
+            vals[Sequence.Count] = other;
+            AdditionSequence result = EquationFactory.MakeNewAdditionSequence(vals);
+            if (Started) other.transform.SetParent(transform, false);
+            return result;
         }
-        return this;
     }
 
+    /// <summary>
+    /// Sorts the AdditionSequence's children by how many variables
+    /// they contain, then by alphabetical order of the variables.
+    /// </summary>
     public void Sort()
     {
         sequence.Sort(CompareEquationParts);
@@ -128,9 +143,11 @@ public class AdditionSequence : EquationPart
 
     public override void UpdateDigits()
     {
+        if (!Started) return;
         foreach (var item in sequence)
         {
             item.UpdateDigits();
+            item.transform.SetParent(transform, false);
         }
         for (int i = sequence.Count - 1; i < operators.Count; i++)
         {
@@ -141,16 +158,17 @@ public class AdditionSequence : EquationPart
         }
         for (int i = operators.Count; i < sequence.Count - 1; i++)
         {
-            EquationDigit plussign = EquationFactory.MakeNewEquationDigit(transform, '+');
+            EquationDigit plussign = EquationFactory.MakeNewEquationDigit('+');
+            plussign.transform.SetParent(transform, false);
             operators.Add(plussign);
         }
-        sequence[0].transform.localPosition.Set(0, 0, 0);
+        sequence[0].transform.SetLocalPositionAndRotation(new Vector3(0, 0, 0), new Quaternion());
         float positiondex = sequence[0].GetDimensions()[0];
         for (int i = 1; i < sequence.Count; i++)
         {
-            operators[i - 1].transform.localPosition.Set(positiondex, 0, 0);
+            operators[i - 1].transform.SetLocalPositionAndRotation(new Vector3(positiondex, 0, 0), new Quaternion());
             positiondex++;
-            sequence[i].transform.localPosition.Set(positiondex, 0, 0);
+            sequence[i].transform.SetLocalPositionAndRotation(new Vector3(positiondex, 0, 0), new Quaternion());
             positiondex += sequence[i].GetDimensions()[0];
         }
     }

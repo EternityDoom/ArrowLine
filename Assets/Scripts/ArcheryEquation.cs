@@ -19,6 +19,8 @@ public class ArcheryEquation : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Quaternion noRotation = new Quaternion();
+        EquationPart slopeCopy, interceptCopy;
         slopeText = transform.Find("SlopeText").gameObject;
         interceptText = transform.Find("InterceptText").gameObject;
         if (slopeDenominator == 0)
@@ -31,38 +33,65 @@ public class ArcheryEquation : MonoBehaviour
         }
         if (slopeDenominator == 1)
         {
-            slope = EquationFactory.MakeNewEquationNumber(transform, slopeNumerator);
+            slope = EquationFactory.MakeNewEquationNumber(slopeNumerator);
+            slopeCopy = EquationFactory.MakeNewEquationNumber(slopeNumerator);
         }
         else
         {
             slope = EquationFactory.MakeNewFraction(
-                transform, 
-                EquationFactory.MakeNewEquationNumber(transform, slopeNumerator), 
-                EquationFactory.MakeNewEquationNumber(transform, slopeDenominator)
+                EquationFactory.MakeNewEquationNumber(slopeNumerator), 
+                EquationFactory.MakeNewEquationNumber(slopeDenominator)
+                );
+            slopeCopy = EquationFactory.MakeNewFraction(
+                EquationFactory.MakeNewEquationNumber(slopeNumerator),
+                EquationFactory.MakeNewEquationNumber(slopeDenominator)
                 );
         }
-        slope.transform.position = new Vector3(2, 0, 0);
+        slope.gameObject.name = "slope";
+        slopeCopy.gameObject.name = "slopeCopy";
         if (interceptDenominator == 1)
         {
-            intercept = EquationFactory.MakeNewEquationNumber(transform, interceptNumerator);
+            intercept = EquationFactory.MakeNewEquationNumber(interceptNumerator);
+            interceptCopy = EquationFactory.MakeNewEquationNumber(interceptNumerator);
         }
         else
         {
             intercept = EquationFactory.MakeNewFraction(
-                transform,
-                EquationFactory.MakeNewEquationNumber(transform, interceptNumerator),
-                EquationFactory.MakeNewEquationNumber(transform, interceptDenominator)
+                EquationFactory.MakeNewEquationNumber(interceptNumerator),
+                EquationFactory.MakeNewEquationNumber(interceptDenominator)
+                );
+            interceptCopy = EquationFactory.MakeNewFraction(
+                EquationFactory.MakeNewEquationNumber(interceptNumerator),
+                EquationFactory.MakeNewEquationNumber(interceptDenominator)
                 );
         }
-        intercept.transform.position = new Vector3(5 + slope.GetDimensions()[0], 0, 0);
-        equalSign = EquationFactory.MakeNewEquationDigit(GetComponent<Transform>(), '=');
-        equalSign.transform.position = new Vector3(1, 0, 0);
+        intercept.gameObject.name = "intercept";
+        interceptCopy.gameObject.name = "interceptCopy";
+        left = EquationFactory.MakeNewEquationVariable('y');
+        left.gameObject.name = "left";
+        equalSign = EquationFactory.MakeNewEquationDigit('=');
+        equalSign.transform.SetParent(transform, false);
+        equalSign.gameObject.name = "equalSign";
+        EquationVariable x = EquationFactory.MakeNewEquationVariable('x');
+        MultiplicationSequence rightMultiplicationSequence = EquationFactory.MakeNewMultiplicationSequence(slopeCopy, x);
+        AdditionSequence rightAdditionSequence = EquationFactory.MakeNewAdditionSequence(rightMultiplicationSequence, interceptCopy);
+        right = rightAdditionSequence;
+        right.gameObject.name = "right";
+        left.transform.SetParent(transform, false);
+        right.transform.SetParent(transform, false);
+        left.transform.SetLocalPositionAndRotation(new Vector3(0, 0), noRotation);
+        equalSign.transform.SetLocalPositionAndRotation(new Vector3(1, 0), noRotation);
+        right.transform.SetLocalPositionAndRotation(new Vector3(2, 0), noRotation);
+        slope.transform.SetParent(transform, false);
+        intercept.transform.SetParent(transform, false);
+        slope.transform.SetLocalPositionAndRotation(new Vector3(2, 0), noRotation);
+        intercept.transform.SetLocalPositionAndRotation(new Vector3(slope.GetDimensions()[0] + 5, 0), noRotation);
+        UpdateDigits();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
     }
 
     public void UpdateDigits()
@@ -71,11 +100,13 @@ public class ArcheryEquation : MonoBehaviour
         {
             left.gameObject.SetActive(false);
             right.gameObject.SetActive(false);
+            equalSign.gameObject.SetActive(false);
             slope.gameObject.SetActive(true);
             intercept.gameObject.SetActive(true);
             slopeText.gameObject.SetActive(true);
             interceptText.gameObject.SetActive(true);
-            // When do we call UpdateDigits() for the slope and the intercept?
+            slope.UpdateDigits();
+            intercept.UpdateDigits();
         }
         else
         {
@@ -85,9 +116,11 @@ public class ArcheryEquation : MonoBehaviour
             interceptText.gameObject.SetActive(false);
             left.gameObject.SetActive(true);
             right.gameObject.SetActive(true);
+            equalSign.gameObject.SetActive(true);
             left.UpdateDigits();
             right.UpdateDigits();
-            // We still need to reposition the right and the equal sign.
+            equalSign.transform.SetLocalPositionAndRotation(new Vector3(left.GetDimensions()[0], 0, 0), new Quaternion());
+            right.transform.SetLocalPositionAndRotation(new Vector3(left.GetDimensions()[0] + 1, 0, 0), new Quaternion());
         }
     }
 

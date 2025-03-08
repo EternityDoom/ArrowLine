@@ -17,6 +17,7 @@ public class EquationNumber : EquationPart
     public override void Start()
     {
         base.Start();
+        UpdateDigits();
     }
     public override bool ContainsVariable(char v)
     {
@@ -32,11 +33,22 @@ public class EquationNumber : EquationPart
     {
         return new char[0];
     }
-    public bool IsInteger() {  return (int)Number == Number; }
+
+    /// <summary>
+    /// Checks if this EquationNumber represents an integer.
+    /// </summary>
+    /// <returns>True if it's an integer, false if it's a decimal.</returns>
+    public bool IsInteger() {  return number % 1 == 0; }
+
+    /// <summary>
+    /// Gets this EquationNumber's number as an integer. Be sure to
+    /// check it with IsInteger() first, so you don't get an exception!
+    /// </summary>
+    /// <returns>The number, in integer form.</returns>
+    /// <exception cref="ArgumentException">Doesn't work if the number is a decimal.</exception>
     public int GetIntegerValue()
     {
-        int i = (int)Number;
-        if (i == Number) return i;
+        if (IsInteger()) return (int)number;
         else throw new ArgumentException("Can't get integer value of a decimal.");
     }
 
@@ -57,25 +69,34 @@ public class EquationNumber : EquationPart
 
     public override void UpdateDigits()
     {
+        if (!Started) return;
         foreach (EquationDigit digit in digits)
         {
             Destroy(digit.gameObject);
         }
         digits.Clear();
-        string textform = Number.ToString();
+        string textform;
         bool decimalflag = false;
+        if (IsInteger()) { 
+            textform = ((int)Number).ToString();
+        }
+        else
+        {
+            textform = Number.ToString();
+            decimalflag = true;
+        }
         for(int i = 0; i < textform.Length; i++)
         {
             if (textform[i] == '.')
             {
-                decimalflag = true;
-                decimalPoint.transform.localPosition.Set(i - 0.5f, 0, 0);
+                decimalPoint.transform.SetLocalPositionAndRotation(new Vector3(i - 0.5f, 0, 0), new Quaternion());
             }
             else 
             {
-                EquationDigit digit = EquationFactory.MakeNewEquationDigit(transform, textform[i]);
-                if (decimalflag) digit.transform.localPosition.Set(i - 1, 0, 0);
-                else digit.transform.localPosition.Set(i, 0, 0);
+                EquationDigit digit = EquationFactory.MakeNewEquationDigit(textform[i]);
+                digit.transform.SetParent(transform, false);
+                if (decimalflag) digit.transform.SetLocalPositionAndRotation(new Vector3(i - 1, 0, 0), new Quaternion());
+                else digit.transform.SetLocalPositionAndRotation(new Vector3(i, 0, 0), new Quaternion());
                 digits.Add(digit);
             }
         }
