@@ -103,4 +103,19 @@ public class EquationNumber : EquationPart
         if (decimalflag) decimalPoint.gameObject.SetActive(true);
         else decimalPoint.gameObject.SetActive(false);
     }
+
+    public override EquationPart DeepCopy()
+    {
+        return EquationFactory.MakeNewEquationNumber(number);
+    }
+
+    /// <summary>
+    /// Alternate version of the DeepCopy() function that accounts
+    /// for the return type.
+    /// </summary>
+    /// <returns>A deep copy of this, as an EquationNumber.</returns>
+    public EquationNumber DeepCopyIdentity()
+    {
+        return EquationFactory.MakeNewEquationNumber(number);
+    }
 }

@@ -168,4 +168,14 @@ public abstract class EquationPart : MonoBehaviour
     /// an ArcheryEquation is modified.
     /// </summary>
     public abstract void UpdateDigits();
+
+    /// <summary>
+    /// Creates a copy of this EquationPart. The copy's digits will be copies of
+    /// the original's digits. If the original has any child EquationParts, the
+    /// copy's children will be made using this function. Absolutely nothing will
+    /// be re-used from the original, so deleting it won't have any effect on
+    /// the copy.
+    /// </summary>
+    /// <returns>A deep copy of this EquationPart.</returns>
+    public abstract EquationPart DeepCopy();
 }

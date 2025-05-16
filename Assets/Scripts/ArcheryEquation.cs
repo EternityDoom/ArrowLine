@@ -34,7 +34,6 @@ public class ArcheryEquation : MonoBehaviour
         if (slopeDenominator == 1)
         {
             slope = EquationFactory.MakeNewEquationNumber(slopeNumerator);
-            slopeCopy = EquationFactory.MakeNewEquationNumber(slopeNumerator);
         }
         else
         {
@@ -42,17 +41,13 @@ public class ArcheryEquation : MonoBehaviour
                 EquationFactory.MakeNewEquationNumber(slopeNumerator), 
                 EquationFactory.MakeNewEquationNumber(slopeDenominator)
                 );
-            slopeCopy = EquationFactory.MakeNewFraction(
-                EquationFactory.MakeNewEquationNumber(slopeNumerator),
-                EquationFactory.MakeNewEquationNumber(slopeDenominator)
-                );
         }
+        slopeCopy = slope.DeepCopy();
         slope.gameObject.name = "slope";
         slopeCopy.gameObject.name = "slopeCopy";
         if (interceptDenominator == 1)
         {
             intercept = EquationFactory.MakeNewEquationNumber(interceptNumerator);
-            interceptCopy = EquationFactory.MakeNewEquationNumber(interceptNumerator);
         }
         else
         {
@@ -60,11 +55,8 @@ public class ArcheryEquation : MonoBehaviour
                 EquationFactory.MakeNewEquationNumber(interceptNumerator),
                 EquationFactory.MakeNewEquationNumber(interceptDenominator)
                 );
-            interceptCopy = EquationFactory.MakeNewFraction(
-                EquationFactory.MakeNewEquationNumber(interceptNumerator),
-                EquationFactory.MakeNewEquationNumber(interceptDenominator)
-                );
         }
+        interceptCopy = intercept.DeepCopy();
         intercept.gameObject.name = "intercept";
         interceptCopy.gameObject.name = "interceptCopy";
         left = EquationFactory.MakeNewEquationVariable('y');

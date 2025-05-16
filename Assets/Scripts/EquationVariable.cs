@@ -57,4 +57,19 @@ public class EquationVariable : EquationPart
     {
         if (Started) digit.Digit = vchar;
     }
+
+    public override EquationPart DeepCopy()
+    {
+        return EquationFactory.MakeNewEquationVariable(vchar);
+    }
+
+    /// <summary>
+    /// Alternate version of the DeepCopy() function that accounts
+    /// for the return type.
+    /// </summary>
+    /// <returns>A deep copy of this, as an EquationVariable.</returns>
+    public EquationVariable DeepCopyIdentity()
+    {
+        return EquationFactory.MakeNewEquationVariable(vchar);
+    }
 }

@@ -123,4 +123,19 @@ public class Fraction : EquationPart
         bar.transform.localScale = new Vector3(width, 0.075f, 1);
         bar.transform.localPosition = new Vector3((width - 1.0f) / 2.0f, 0, 0);
     }
+
+    public override EquationPart DeepCopy()
+    {
+        return EquationFactory.MakeNewFraction(Numerator.DeepCopy(), Denominator.DeepCopy());
+    }
+
+    /// <summary>
+    /// Alternate version of the DeepCopy() function that accounts
+    /// for the return type.
+    /// </summary>
+    /// <returns>A deep copy of this, as a Fraction.</returns>
+    public Fraction DeepCopyIdentity()
+    {
+        return EquationFactory.MakeNewFraction(Numerator.DeepCopy(), Denominator.DeepCopy());
+    }
 }

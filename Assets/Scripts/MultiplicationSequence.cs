@@ -231,4 +231,29 @@ public class MultiplicationSequence : EquationPart
             }
         }
     }
+
+    public override EquationPart DeepCopy()
+    {
+        EquationPart[] newSeq = new EquationPart[Sequence.Count];
+        for (int i = 0; i < newSeq.Length; i++)
+        {
+            newSeq[i] = Sequence[i].DeepCopy();
+        }
+        return EquationFactory.MakeNewMultiplicationSequence(newSeq);
+    }
+
+    /// <summary>
+    /// Alternate version of the DeepCopy() function that accounts
+    /// for the return type.
+    /// </summary>
+    /// <returns>A deep copy of this, as a MultiplicationSequence.</returns>
+    public MultiplicationSequence DeepCopyIdentity()
+    {
+        EquationPart[] newSeq = new EquationPart[Sequence.Count];
+        for (int i = 0; i < newSeq.Length; i++)
+        {
+            newSeq[i] = Sequence[i].DeepCopy();
+        }
+        return EquationFactory.MakeNewMultiplicationSequence(newSeq);
+    }
 }
